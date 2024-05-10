@@ -32,10 +32,10 @@ services:
     container_name: promofarma_mysql
     ports: ["3330:3306"]
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: promofarmaroot
       MYSQL_DATABASE: promofarma
-      MYSQL_USER: user
-      MYSQL_PASSWORD: 1234
+      MYSQL_USER: promofarma
+      MYSQL_PASSWORD: promofarma
     networks:
       - promofarma-network
 
