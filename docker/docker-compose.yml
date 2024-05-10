@@ -1,0 +1,43 @@
+services:
+  fpm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: development
+    container_name: promofarma_php_fpm
+    user: "${USER}"
+    volumes:
+      - ../:/opt/app
+    networks:
+      - promofarma-network
+
+  nginx:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: nginx
+    container_name: promofarma_nginx
+    environment:
+      - NGINX_SERVER_PORT=8080
+      - API_FPM_HOST=fpm
+    ports:
+      - 9095:8080
+    depends_on:
+      - fpm
+    networks:
+      - promofarma-network
+
+  mysql:
+    image: mysql:8.3.0
+    container_name: promofarma_mysql
+    ports: ["3330:3306"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: promofarma
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 1234
+    networks:
+      - promofarma-network
+
+networks:
+  promofarma-network:
