@@ -52,6 +52,24 @@ final class DbalProductRepositoryTest extends KernelTestCase
         $this->removeSeller($sellerId);
     }
 
+    public function testRemove(): void
+    {
+        $id = Uuid::uuid4()->toString();
+        $sellerId = Uuid::uuid4()->toString();
+        $sellerName = 'seller name';
+        $name = 'product name';
+        $price = 20.0;
+
+        $this->saveSeller($sellerId, $sellerName);
+        $this->saveProduct($id, $sellerId, $name, $price);
+
+        $this->repository->remove(ProductId::fromString($id));
+        $this->removeSeller($sellerId);
+
+        $product = $this->findProduct(ProductId::fromString($id));
+        $this->assertNull($product);
+    }
+
     private function findProduct(ProductId $id): ?Product
     {
         $product = $this->connection->createQueryBuilder()
@@ -80,6 +98,22 @@ final class DbalProductRepositoryTest extends KernelTestCase
             [
                 'id' => $sellerId,
                 'name' => $sellerName,
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function saveProduct(string $productId, string $sellerId, string $name, float $price): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO product (id, sellerId, name, price)
+                     VALUE (:id, :sellerId, :name, :price)",
+            [
+                'id' => $productId,
+                'sellerId' => $sellerId,
+                'name' => $name,
+                'price' => $price,
             ]
         );
         $this->connection->commit();

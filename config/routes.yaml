@@ -9,3 +9,7 @@ remove_seller:
 add_product:
   path: /product/add
   controller: App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct\AddProductController
+
+remove_product:
+  path: /product/remove
+  controller: App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\RemoveProduct\RemoveProductController

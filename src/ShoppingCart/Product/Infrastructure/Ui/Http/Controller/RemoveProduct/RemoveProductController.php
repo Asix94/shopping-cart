@@ -1,32 +1,31 @@
 <?php
 
-namespace App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\RemoveSeller;
+namespace App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\RemoveProduct;
 
-use App\ShoppingCart\Seller\Application\SellerEliminator;
-use App\ShoppingCart\Seller\Domain\Exceptions\FailedRemoveSellerException;
+use App\ShoppingCart\Product\Application\ProductEliminator;
+use App\ShoppingCart\Product\Domain\Exceptions\FailedRemoveProductException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-final class RemoveSellerController
+final class RemoveProductController
 {
-    public function __construct(private readonly SellerEliminator $eliminator) {}
+    public function __construct(private readonly ProductEliminator $eliminator) {}
 
     public function __invoke(Request $request): JsonResponse
     {
         try {
             $id = $request->get('id');
             $this->validateParam($id);
-            $sellerId = RemoveSellerRequest::sellerRequest($id);
+            $productId = RemoveProductRequest::productRequest($id);
 
-            $this->eliminator->__invoke($sellerId);
-            return new JsonResponse('Seller is remove successfully', 201);
-        } catch (FailedRemoveSellerException $e) {
+            $this->eliminator->__invoke($productId);
+            return new JsonResponse('Product is remove successfully', 201);
+        } catch (FailedRemoveProductException $e) {
             return new JsonResponse($e->getMessage(), 500);
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), 404);
         }
     }
-
     private function validateParam(string $nameParam): void
     {
         if (!$nameParam) {
