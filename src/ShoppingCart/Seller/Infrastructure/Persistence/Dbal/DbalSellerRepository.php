@@ -2,8 +2,10 @@
 
 namespace App\ShoppingCart\Seller\Infrastructure\Persistence\Dbal;
 
-use App\ShoppingCart\Seller\Domain\FailedSaveSellerException;
+use App\ShoppingCart\Seller\Domain\Exceptions\FailedRemoveSellerException;
+use App\ShoppingCart\Seller\Domain\Exceptions\FailedSaveSellerException;
 use App\ShoppingCart\Seller\Domain\Seller;
+use App\ShoppingCart\Seller\Domain\SellerId;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -33,6 +35,22 @@ final class DbalSellerRepository implements SellerRepository
             $this->connection->rollBack();
             throw new FailedSaveSellerException('Failed to save seller: ' . $e->getMessage());
         }
+    }
 
+    public function remove(SellerId $id): void
+    {
+        try {
+            $this->connection->beginTransaction();
+            $this->connection->executeStatement(
+                "DELETE FROM seller WHERE id = :id",
+                [
+                    'id' => $id->toString(),
+                ]
+            );
+            $this->connection->commit();
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw new FailedRemoveSellerException('Failed to remove seller: ' . $e->getMessage());
+        }
     }
 }

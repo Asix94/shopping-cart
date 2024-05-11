@@ -13,8 +13,18 @@ services:
     arguments:
       - '@App\ShoppingCart\Seller\Domain\SellerRepository'
 
+  App\ShoppingCart\Seller\Application\SellerEliminator:
+    arguments:
+      - '@App\ShoppingCart\Seller\Domain\SellerRepository'
+
   App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller\AddSellerController:
     arguments:
       - '@App\ShoppingCart\Seller\Application\SellerCreator'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\RemoveSeller\RemoveSellerController:
+    arguments:
+      - '@App\ShoppingCart\Seller\Application\SellerEliminator'
     tags:
       - controller.service_arguments

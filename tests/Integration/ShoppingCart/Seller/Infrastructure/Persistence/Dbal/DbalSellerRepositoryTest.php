@@ -36,7 +36,21 @@ final class DbalSellerRepositoryTest extends KernelTestCase
         $this->deleteSeller($id);
     }
 
-    private function findSeller(SellerId $id): Seller
+    public function testRemove(): void
+    {
+        $id = SellerId::fromString(Uuid::uuid4()->toString());
+        $name = SellerName::fromString('test');
+
+        $seller = new Seller($id, $name);
+        $this->saveSeller($seller);
+
+        $this->repository->remove($id);
+        $sellerFind = $this->findSeller($id);
+
+        $this->assertNull($sellerFind);
+    }
+
+    private function findSeller(SellerId $id): ?Seller
     {
         $seller = $this->connection->createQueryBuilder()
                                        ->select('*')
@@ -45,6 +59,7 @@ final class DbalSellerRepositoryTest extends KernelTestCase
                                        ->setParameter('id', $id->toString())
                                        ->executeQuery()->fetchAssociative();
 
+        if (!$seller) { return null; }
         return new Seller(SellerId::fromString($seller['id']), SellerName::fromString($seller['name']));
     }
 
@@ -55,6 +70,20 @@ final class DbalSellerRepositoryTest extends KernelTestCase
             "DELETE FROM seller WHERE id = :id",
             [
                 'id' => $id->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function saveSeller(Seller $seller): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO seller (id, name)
+                     VALUE (:id, :name)",
+            [
+                'id' => $seller->id()->toString(),
+                'name' => $seller->name(),
             ]
         );
         $this->connection->commit();

@@ -3,7 +3,7 @@
 namespace App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller;
 
 use App\ShoppingCart\Seller\Application\SellerCreator;
-use App\ShoppingCart\Seller\Domain\FailedSaveSellerException;
+use App\ShoppingCart\Seller\Domain\Exceptions\FailedSaveSellerException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
