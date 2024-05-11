@@ -1,0 +1,3 @@
+add_seller:
+  path: /seller/add
+  controller: App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller\AddSellerController
