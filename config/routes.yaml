@@ -5,3 +5,7 @@ add_seller:
 remove_seller:
   path: /seller/remove
   controller: App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\RemoveSeller\RemoveSellerController
+
+add_product:
+  path: /product/add
+  controller: App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct\AddProductController
