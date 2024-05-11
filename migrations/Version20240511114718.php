@@ -11,24 +11,27 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240510220441 extends AbstractMigration
+final class Version20240511114718 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Create Seller Table ';
+        return 'Create Product Table';
     }
 
     public function up(Schema $schema): void
     {
-        $table = $schema->createTable('seller');
+        $table = $schema->createTable('product');
         $table->addColumn('id', Types::STRING)->setLength(36)->setNotnull(true);
+        $table->addColumn('sellerId', Types::STRING)->setLength(36)->setNotnull(true);
         $table->addColumn('name', Types::STRING)->setNotnull(true);
+        $table->addColumn('price', Types::FLOAT)->setNotnull(true);
         $table->setPrimaryKey(['id']);
+        $table->addForeignKeyConstraint('seller', ['sellerId'], ['id'], ['onDelete' => 'CASCADE']);
 
     }
 
     public function down(Schema $schema): void
     {
-        $schema->dropTable('seller');
+        $schema->dropTable('product');
     }
 }
