@@ -7,6 +7,8 @@ use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedConfirmCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveCartException;
+use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveItemCartException;
+use App\ShoppingCart\Cart\Domain\Cart\Item;
 use Doctrine\DBAL\Connection;
 
 final class DbalCartRepository implements CartRepository
@@ -45,6 +47,25 @@ final class DbalCartRepository implements CartRepository
         } catch (\Exception $e) {
             $this->connection->rollBack();
             throw new FailedConfirmCartException('Failed to confirm cart: ' . $e->getMessage());
+        }
+    }
+
+    public function saveItemCart(CartId $cartId, Item $item): void
+    {
+        try {
+            $this->connection->beginTransaction();
+            $this->connection->executeStatement(
+                "INSERT INTO cart_item (cart_id, product_id, quantity) VALUE (:cart_id, :product_id, :quantity)",
+                [
+                    'cart_id' => $cartId->toString(),
+                    'product_id' => $item->product()->id()->toString(),
+                    'quantity' => $item->quantity()->toInt(),
+                ]
+            );
+            $this->connection->commit();
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw new FailedSaveItemCartException('Failed to save item cart: ' . $e->getMessage());
         }
     }
 }

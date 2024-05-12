@@ -4,8 +4,6 @@ namespace App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct;
 
 use App\ShoppingCart\Product\Application\ProductCreator;
 use App\ShoppingCart\Product\Domain\Exceptions\FailedSaveProductException;
-use App\ShoppingCart\Product\Domain\ProductRepository;
-use Doctrine\DBAL\Driver\Exception;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

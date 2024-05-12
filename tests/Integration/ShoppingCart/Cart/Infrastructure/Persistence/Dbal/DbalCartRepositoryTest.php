@@ -4,6 +4,7 @@ namespace App\Tests\Integration\ShoppingCart\Cart\Infrastructure\Persistence\Dba
 
 use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
+use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Persistence\Dbal\DbalCartRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,7 +25,8 @@ final class DbalCartRepositoryTest extends KernelTestCase
     {
         $id = Uuid::uuid4()->toString();
         $cart = new Cart(
-            CartId::fromString($id)
+            CartId::fromString($id),
+            Items::create([])
         );
 
         $this->repository->save($cart);
@@ -40,7 +42,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $id = Uuid::uuid4()->toString();
         $cart = new Cart(
             CartId::fromString($id),
-            false
+            Items::create([])
         );
 
         $this->createCart($cart);
@@ -68,6 +70,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         }
         return new Cart(
             CartId::fromString($cart['id']),
+            Items::create([]),
             $cart['confirmed']
         );
     }

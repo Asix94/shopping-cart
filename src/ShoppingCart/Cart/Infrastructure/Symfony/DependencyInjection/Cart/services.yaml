@@ -7,7 +7,13 @@ services:
     arguments:
       - '@Doctrine\DBAL\Connection'
 
+  App\ShoppingCart\Product\Infrastructure\Persistence\Dbal\DbalProductRepository:
+    arguments:
+      - '@Doctrine\DBAL\Connection'
+
   App\ShoppingCart\Cart\Domain\Cart\CartRepository: '@App\ShoppingCart\Cart\Infrastructure\Persistence\Dbal\DbalCartRepository'
+  App\ShoppingCart\Cart\Domain\Product\ProductRepository: '@App\ShoppingCart\Product\Infrastructure\Persistence\Dbal\DbalProductRepository'
+
 
   App\ShoppingCart\Cart\Application\Cart\CartCreator:
     arguments:
@@ -16,6 +22,11 @@ services:
   App\ShoppingCart\Cart\Application\Cart\CartConfirmed:
     arguments:
       - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+
+  App\ShoppingCart\Cart\Application\Item\ItemCreator:
+    arguments:
+      - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+      - '@App\ShoppingCart\Cart\Domain\Product\ProductRepository'
 
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController:
     arguments:
@@ -26,5 +37,11 @@ services:
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\ConfirmedCart\ConfirmedCartController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Cart\CartConfirmed'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddItem\AddItemController:
+    arguments:
+      - '@App\ShoppingCart\Cart\Application\Item\ItemCreator'
     tags:
       - controller.service_arguments

@@ -6,6 +6,7 @@ use App\ShoppingCart\Cart\Application\Cart\CartCreator;
 use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
+use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartRequest;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -26,7 +27,7 @@ final class CartCreatorTest extends TestCase
         $id = Uuid::uuid4()->toString();
 
         $cartRequest = AddCartRequest::addCartRequest($id);
-        $cart = new Cart(CartId::fromString($id));
+        $cart = new Cart(CartId::fromString($id), Items::create([]));
 
         $this->repository
             ->expects($this->once())

@@ -7,4 +7,6 @@ interface CartRepository
     public function save(Cart $cart): void;
 
     public function cartConfirmed(CartId $cartId): void;
+
+    public function saveItemCart(CartId $cartId, Item $item): void;
 }
