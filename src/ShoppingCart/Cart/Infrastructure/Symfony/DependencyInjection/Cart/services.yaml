@@ -28,6 +28,10 @@ services:
       - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
       - '@App\ShoppingCart\Cart\Domain\Product\ProductRepository'
 
+  App\ShoppingCart\Cart\Application\Item\ItemEliminator:
+    arguments:
+      - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Cart\CartCreator'
@@ -43,5 +47,11 @@ services:
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddItem\AddItemController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Item\ItemCreator'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveItem\RemoveItemController:
+    arguments:
+      - '@App\ShoppingCart\Cart\Application\Item\ItemEliminator'
     tags:
       - controller.service_arguments

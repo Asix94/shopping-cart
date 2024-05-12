@@ -6,9 +6,11 @@ use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedConfirmCartException;
+use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedRemoveItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Item;
+use App\ShoppingCart\Product\Domain\ProductId;
 use Doctrine\DBAL\Connection;
 
 final class DbalCartRepository implements CartRepository
@@ -66,6 +68,24 @@ final class DbalCartRepository implements CartRepository
         } catch (\Exception $e) {
             $this->connection->rollBack();
             throw new FailedSaveItemCartException('Failed to save item cart: ' . $e->getMessage());
+        }
+    }
+
+    public function removeItemCart(CartId $cartId, ProductId $productId): void
+    {
+        try {
+            $this->connection->beginTransaction();
+            $this->connection->executeStatement(
+                "DELETE FROM cart_item WHERE cart_id = :cart_id AND product_id = :product_id",
+                [
+                    'cart_id' => $cartId->toString(),
+                    'product_id' => $productId->toString(),
+                ]
+            );
+            $this->connection->commit();
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw new FailedRemoveItemCartException('Failed to remove item cart: ' . $e->getMessage());
         }
     }
 }

@@ -25,3 +25,7 @@ confirmed_cart:
 add_item:
   path: cart/item/add
   controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddItem\AddItemController
+
+remove_item:
+  path: cart/item/remove
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveItem\RemoveItemController
