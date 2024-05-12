@@ -32,6 +32,8 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $cartFinder = $this->findCart($cart->id());
 
         $this->assertEquals($cartFinder->id(), $cart->id());
+
+        $this->deleteCart($cart->id());
     }
 
     private function findCart(CartId $id): ?Cart
@@ -49,5 +51,17 @@ final class DbalCartRepositoryTest extends KernelTestCase
         return new Cart(
             CartId::fromString($cart['id']),
         );
+    }
+
+    public function deleteCart(CartId $id): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "DELETE FROM cart WHERE id = :id",
+            [
+                'id' => $id->toString(),
+            ]
+        );
+        $this->connection->commit();
     }
 }
