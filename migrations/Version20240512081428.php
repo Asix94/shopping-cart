@@ -22,6 +22,7 @@ final class Version20240512081428 extends AbstractMigration
     {
         $table = $schema->createTable('cart');
         $table->addColumn('id', Types::STRING)->setLength(36)->setNotnull(true);
+        $table->addColumn('confirmed', Types::BOOLEAN)->setNotnull(true);
         $table->setPrimaryKey(['id']);
     }
 
