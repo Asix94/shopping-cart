@@ -14,7 +14,7 @@ final class CartCreator
     public function __invoke(AddCartRequest $cartRequest): void
     {
         $cart = new Cart(
-            CartId::fromString($cartRequest->id()),
+            CartId::fromString($cartRequest->id())
         );
         $this->cartRepository->save($cart);
     }

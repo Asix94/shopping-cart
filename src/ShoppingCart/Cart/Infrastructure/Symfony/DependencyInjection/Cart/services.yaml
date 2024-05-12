@@ -13,8 +13,18 @@ services:
     arguments:
       - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
 
+  App\ShoppingCart\Cart\Application\Cart\CartConfirmed:
+    arguments:
+      - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Cart\CartCreator'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\ConfirmedCart\ConfirmedCartController:
+    arguments:
+      - '@App\ShoppingCart\Cart\Application\Cart\CartConfirmed'
     tags:
       - controller.service_arguments

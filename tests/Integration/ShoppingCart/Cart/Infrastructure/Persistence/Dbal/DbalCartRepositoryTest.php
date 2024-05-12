@@ -8,7 +8,6 @@ use App\ShoppingCart\Cart\Infrastructure\Persistence\Dbal\DbalCartRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\DependencyInjection\Container;
 
 final class DbalCartRepositoryTest extends KernelTestCase
 {
@@ -36,6 +35,25 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteCart($cart->id());
     }
 
+    public function testConfirmedCart(): void
+    {
+        $id = Uuid::uuid4()->toString();
+        $cart = new Cart(
+            CartId::fromString($id),
+            false
+        );
+
+        $this->createCart($cart);
+        $cartNotConfirmed = $this->findCart($cart->id());
+        $this->assertFalse($cartNotConfirmed->confirmed());
+
+        $this->repository->cartConfirmed($cart->id());
+        $cartConfirmed = $this->findCart($cart->id());
+        $this->assertTrue($cartConfirmed->confirmed());
+
+        $this->deleteCart($cart->id());
+    }
+
     private function findCart(CartId $id): ?Cart
     {
         $cart = $this->connection->createQueryBuilder()
@@ -50,7 +68,20 @@ final class DbalCartRepositoryTest extends KernelTestCase
         }
         return new Cart(
             CartId::fromString($cart['id']),
+            $cart['confirmed']
         );
+    }
+
+    public function createCart(Cart $cart): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO cart(id) VALUES (:id)",
+            [
+                'id' => $cart->id()->toString(),
+            ]
+        );
+        $this->connection->commit();
     }
 
     public function deleteCart(CartId $id): void

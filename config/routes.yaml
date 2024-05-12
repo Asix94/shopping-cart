@@ -17,3 +17,7 @@ remove_product:
 add_cart:
   path: /cart/add
   controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController
+
+confirmed_cart:
+  path: /cart/confirmed
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\ConfirmedCart\ConfirmedCartController

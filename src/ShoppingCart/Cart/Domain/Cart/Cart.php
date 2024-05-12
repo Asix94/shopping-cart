@@ -6,7 +6,7 @@ final class Cart
 {
     public function __construct(
         private readonly CartId $id,
-        private readonly bool $confirmed = true,
+        private readonly bool $confirmed = false,
     ) {}
 
     public function id(): CartId
