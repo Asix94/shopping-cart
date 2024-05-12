@@ -13,3 +13,7 @@ add_product:
 remove_product:
   path: /product/remove
   controller: App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\RemoveProduct\RemoveProductController
+
+add_cart:
+  path: /cart/add
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController

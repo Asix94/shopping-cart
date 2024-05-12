@@ -7,6 +7,7 @@
 imports:
     - resource: '../src/ShoppingCart/Seller/Infrastructure/Symfony/DependencyInjection/services.yaml'
     - resource: '../src/ShoppingCart/Product/Infrastructure/Symfony/DependencyInjection/services.yaml'
+    - resource: '../src/ShoppingCart/Cart/Infrastructure/Symfony/DependencyInjection/Cart/services.yaml'
 
 services:
     # default configuration for services in *this* file
