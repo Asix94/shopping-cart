@@ -41,12 +41,12 @@ final class DbalProductRepositoryTest extends KernelTestCase
         );
 
         $this->repository->save($product);
-        $product = $this->findProduct(ProductId::fromString($id));
+        $productFinder = $this->findProduct(ProductId::fromString($id));
 
-        $this->assertEquals($product->id()->toString(), $id);
-        $this->assertEquals($product->sellerId()->toString(), $sellerId);
-        $this->assertEquals($product->name()->toString(), $name);
-        $this->assertEquals($product->price()->toString(), $price);
+        $this->assertEquals($product->id(), $productFinder->id());
+        $this->assertEquals($product->sellerId(), $productFinder->sellerId());
+        $this->assertEquals($product->name(), $productFinder->name());
+        $this->assertEquals($product->price(), $productFinder->price());
 
         $this->removeProduct($id);
         $this->removeSeller($sellerId);
