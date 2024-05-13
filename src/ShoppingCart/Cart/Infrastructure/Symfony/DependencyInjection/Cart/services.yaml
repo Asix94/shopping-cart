@@ -36,6 +36,14 @@ services:
     arguments:
       - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
 
+  App\ShoppingCart\Cart\Application\Item\ItemIncrementor:
+    arguments:
+      - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+
+  App\ShoppingCart\Cart\Application\Item\ItemDecrement:
+    arguments:
+      - '@App\ShoppingCart\Cart\Domain\Cart\CartRepository'
+
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Cart\CartCreator'
@@ -63,5 +71,17 @@ services:
   App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\TotalAmount\TotalAmountController:
     arguments:
       - '@App\ShoppingCart\Cart\Application\Cart\CartFinder'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\IncreaseItem\IncreaseItemController:
+    arguments:
+      - '@App\ShoppingCart\Cart\Application\Item\ItemIncrementor'
+    tags:
+      - controller.service_arguments
+
+  App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\DecreaseItem\DecreaseItemController:
+    arguments:
+      - '@App\ShoppingCart\Cart\Application\Item\ItemDecrement'
     tags:
       - controller.service_arguments

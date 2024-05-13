@@ -33,3 +33,11 @@ remove_item:
 total_amount_cart:
   path: cart/total_amount
   controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\TotalAmount\TotalAmountController
+
+increase_item_cart:
+  path: cart/item/increment
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\IncreaseItem\IncreaseItemController
+
+decrease_item_cart:
+  path: cart/item/decrease
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\DecreaseItem\DecreaseItemController

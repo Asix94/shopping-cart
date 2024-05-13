@@ -8,7 +8,7 @@ final class Item
 {
     public function __construct(
         private readonly Product $product,
-        private readonly Quantity $quantity
+        private Quantity $quantity
     ) {}
 
     public function product(): Product
@@ -19,5 +19,17 @@ final class Item
     public function quantity(): Quantity
     {
         return $this->quantity;
+    }
+
+    public function increaseQuantity(): void
+    {
+        $quantity = $this->quantity->toInt() + 1;
+        $this->quantity = Quantity::fromInt($quantity);
+    }
+
+    public function decreaseQuantity(): void
+    {
+        $quantity = $this->quantity->toInt() -1;
+        $this->quantity = Quantity::fromInt($quantity);
     }
 }

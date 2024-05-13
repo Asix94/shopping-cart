@@ -136,4 +136,51 @@ final class DbalCartRepository implements CartRepository
             $cart['confirmed']
         );
     }
+
+    public function findItemByCartIdAndProductId(CartId $cartId, ProductId $productId): Item
+    {
+        $cartQueryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('cart_item', 'ci')
+            ->leftJoin('ci', 'product', 'p', 'ci.product_id = p.id')
+            ->where('cart_id = :cart_id')
+            ->andWhere('product_id = :product_id')
+            ->setMaxResults(1)
+            ->setParameter('cart_id', $cartId->toString())
+            ->setParameter('product_id', $productId->toString());
+
+        $item = $cartQueryBuilder->executeQuery()->fetchAssociative();
+
+        if (null === $item) { return throw new \Exception('Item not found'); }
+
+        return new Item(
+            new Product(
+                ProductId::fromString($item['product_id']),
+                SellerId::fromString($item['sellerId']),
+                Name::fromString($item['name']),
+                Price::fromFloat($item['price'])
+            ),
+            Quantity::fromInt($item['quantity'])
+        );
+    }
+
+    public function UpdateQuantity(CartId $cartId, Item $item): void
+    {
+        try {
+            $this->connection->beginTransaction();
+            $this->connection->executeStatement(
+                "UPDATE cart_item SET quantity = :quantity WHERE cart_id = :cart_id AND product_id = :product_id",
+                [
+                    'cart_id' => $cartId->toString(),
+                    'product_id' => $item->product()->id()->toString(),
+                    'quantity' => $item->quantity()->toInt(),
+                ]
+            );
+            $this->connection->commit();
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw new \Exception('Failed to update item: ' . $e->getMessage());
+        }
+    }
 }
