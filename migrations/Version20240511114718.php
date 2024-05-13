@@ -22,11 +22,11 @@ final class Version20240511114718 extends AbstractMigration
     {
         $table = $schema->createTable('product');
         $table->addColumn('id', Types::STRING)->setLength(36)->setNotnull(true);
-        $table->addColumn('sellerId', Types::STRING)->setLength(36)->setNotnull(true);
+        $table->addColumn('seller_id', Types::STRING)->setLength(36)->setNotnull(true);
         $table->addColumn('name', Types::STRING)->setNotnull(true);
         $table->addColumn('price', Types::FLOAT)->setNotnull(true);
         $table->setPrimaryKey(['id']);
-        $table->addForeignKeyConstraint('seller', ['sellerId'], ['id'], ['onDelete' => 'CASCADE']);
+        $table->addForeignKeyConstraint('seller', ['seller_id'], ['id'], ['onDelete' => 'CASCADE']);
 
     }
 

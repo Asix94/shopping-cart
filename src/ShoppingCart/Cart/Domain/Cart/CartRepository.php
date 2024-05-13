@@ -13,4 +13,6 @@ interface CartRepository
     public function saveItemCart(CartId $cartId, Item $item): void;
 
     public function removeItemCart(CartId $cartId, ProductId $productId): void;
+
+    public function findById(CartId $cartId): Cart;
 }

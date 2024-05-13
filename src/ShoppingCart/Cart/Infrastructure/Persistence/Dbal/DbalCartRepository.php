@@ -6,11 +6,18 @@ use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedConfirmCartException;
+use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedFindCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedRemoveItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Item;
+use App\ShoppingCart\Cart\Domain\Cart\Items;
+use App\ShoppingCart\Cart\Domain\Cart\Quantity;
+use App\ShoppingCart\Product\Domain\Name;
+use App\ShoppingCart\Product\Domain\Price;
+use App\ShoppingCart\Product\Domain\Product;
 use App\ShoppingCart\Product\Domain\ProductId;
+use App\ShoppingCart\Product\Domain\SellerId;
 use Doctrine\DBAL\Connection;
 
 final class DbalCartRepository implements CartRepository
@@ -87,5 +94,46 @@ final class DbalCartRepository implements CartRepository
             $this->connection->rollBack();
             throw new FailedRemoveItemCartException('Failed to remove item cart: ' . $e->getMessage());
         }
+    }
+
+    public function findById(CartId $cartId): Cart
+    {
+        $cartQueryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('cart')
+            ->where('id = :id')
+            ->setMaxResults(1)
+            ->setParameter('id', $cartId->toString());
+
+        $cart = $cartQueryBuilder->executeQuery()->fetchAssociative();
+
+        if (null === $cart) { throw new FailedFindCartException(); }
+
+        $itemsQueryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('cart_item', 'ci')
+            ->leftJoin('ci', 'product', 'p', 'ci.product_id = p.id')
+            ->where('ci.cart_id = :cart_id')
+            ->setParameter('cart_id', $cartId->toString());
+
+        $items = $itemsQueryBuilder->executeQuery()->fetchAllAssociative();
+
+        return new Cart(
+            CartId::fromString($cart['id']),
+            new Items([
+                ...array_map(fn($item) => new Item(
+                    new Product(
+                        ProductId::fromString($item['product_id']),
+                        SellerId::fromString($item['sellerId']),
+                        Name::fromString($item['name']),
+                        Price::fromFloat($item['price'])
+                    ),
+                    Quantity::fromInt($item['quantity'])
+                ),$items)]
+            ),
+            $cart['confirmed']
+        );
     }
 }

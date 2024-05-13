@@ -56,4 +56,9 @@ abstract class Decimal  implements \JsonSerializable
     {
         return $this->value > $other->value;
     }
+
+    public function value(): float
+    {
+        return $this->value;
+    }
 }

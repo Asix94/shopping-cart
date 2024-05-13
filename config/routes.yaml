@@ -29,3 +29,7 @@ add_item:
 remove_item:
   path: cart/item/remove
   controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveItem\RemoveItemController
+
+total_amount_cart:
+  path: cart/total_amount
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\TotalAmount\TotalAmountController

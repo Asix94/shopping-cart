@@ -55,4 +55,9 @@ abstract class Integer implements \JsonSerializable
     {
         return $this->value > $other->value;
     }
+
+    public function value(): int
+    {
+        return $this->value;
+    }
 }

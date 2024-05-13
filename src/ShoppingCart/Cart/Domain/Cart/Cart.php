@@ -24,4 +24,14 @@ final class Cart
     {
         return $this->confirmed;
     }
+
+    public function totalAmount(): float
+    {
+        $totalAmount = 0;
+
+        foreach ($this->items as $item) {
+            $totalAmount += $item->product()->price()->value() * $item->quantity()->value();
+        }
+        return $totalAmount;
+    }
 }
