@@ -7,6 +7,7 @@ use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedConfirmCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedFindCartException;
+use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedRemoveAllItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedRemoveItemCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveItemCartException;
@@ -93,6 +94,23 @@ final class DbalCartRepository implements CartRepository
         } catch (\Exception $e) {
             $this->connection->rollBack();
             throw new FailedRemoveItemCartException('Failed to remove item cart: ' . $e->getMessage());
+        }
+    }
+
+    public function removeAllItemCart(CartId $cartId): void
+    {
+        try {
+            $this->connection->beginTransaction();
+            $this->connection->executeStatement(
+                "DELETE FROM cart_item WHERE cart_id = :cart_id",
+                [
+                    'cart_id' => $cartId->toString(),
+                ]
+            );
+            $this->connection->commit();
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw new FailedRemoveAllItemCartException('Failed to remove all item cart: ' . $e->getMessage());
         }
     }
 

@@ -14,6 +14,8 @@ interface CartRepository
 
     public function removeItemCart(CartId $cartId, ProductId $productId): void;
 
+    public function removeAllItemCart(CartId $cartId): void;
+
     public function findById(CartId $cartId): Cart;
 
     public function findItemByCartIdAndProductId(CartId $cartId, ProductId $productId): Item;

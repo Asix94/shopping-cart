@@ -41,3 +41,7 @@ increase_item_cart:
 decrease_item_cart:
   path: cart/item/decrease
   controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\DecreaseItem\DecreaseItemController
+
+remove_all_items:
+  path: cart/item/remove_all
+  controller: App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveAllItems\RemoveAllItemController
