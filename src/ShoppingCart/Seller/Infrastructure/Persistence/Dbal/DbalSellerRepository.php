@@ -6,6 +6,7 @@ use App\ShoppingCart\Seller\Domain\Exceptions\FailedRemoveSellerException;
 use App\ShoppingCart\Seller\Domain\Exceptions\FailedSaveSellerException;
 use App\ShoppingCart\Seller\Domain\Seller;
 use App\ShoppingCart\Seller\Domain\SellerId;
+use App\ShoppingCart\Seller\Domain\SellerName;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -52,5 +53,24 @@ final class DbalSellerRepository implements SellerRepository
             $this->connection->rollBack();
             throw new FailedRemoveSellerException('Failed to remove seller: ' . $e->getMessage());
         }
+    }
+
+    public function findById(SellerId $id): ?Seller
+    {
+        $sellerQueryBuilder = $this->connection
+            ->createQueryBuilder()
+            ->select('*')
+            ->from('seller')
+            ->where('id = :id')
+            ->setMaxResults(1)
+            ->setParameter('id', $id->toString());
+
+        $seller = $sellerQueryBuilder->executeQuery()->fetchAssociative();
+
+        if (!$seller) { return null; }
+        return new Seller(
+            SellerId::fromString($seller['id']),
+            SellerName::fromString($seller['name'])
+        );
     }
 }

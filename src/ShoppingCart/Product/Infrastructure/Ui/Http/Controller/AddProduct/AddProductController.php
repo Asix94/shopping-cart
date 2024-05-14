@@ -4,6 +4,9 @@ namespace App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct;
 
 use App\ShoppingCart\Product\Application\ProductCreator;
 use App\ShoppingCart\Product\Domain\Exceptions\FailedSaveProductException;
+use App\ShoppingCart\Seller\Domain\Exceptions\SellerNotFoundException;
+use App\ShoppingCart\Shared\Domain\Exception\ValidationException;
+use App\ShoppingCart\Shared\Domain\ValidateRequest;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,19 +17,13 @@ final class AddProductController
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $sellerId = $request->query->get('sellerId');
-            $name = $request->query->get('name');
-            $price = $request->query->get('price');
-
-            $this->ValidateParams($sellerId, 'sellerId');
-            $this->ValidateParams($name, 'name');
-            $this->ValidateParams($price, 'price');
+            ValidateRequest::validate($request, ['sellerId', 'name', 'price']);
 
             $product = AddProductRequest::productRequest(
                 Uuid::uuid4()->toString(),
-                $sellerId,
-                $name,
-                $price
+                $request->get('sellerId'),
+                $request->get('name'),
+                $request->get('price')
             );
 
             $this->creator->__invoke($product);
@@ -34,15 +31,10 @@ final class AddProductController
             return new JsonResponse('Product is saved successfully', 201);
         } catch (FailedSaveProductException  $e) {
             return new JsonResponse($e->getMessage(), 500);
-        } catch (\Exception $e) {
+        } catch (SellerNotFoundException $e) {
             return new JsonResponse($e->getMessage(), 404);
-        }
-    }
-
-    private function ValidateParams(?string $param, string $nameParam): void
-    {
-        if (!$param) {
-            throw new \Exception('Parameter ' . $nameParam . ' is required.');
+        } catch (ValidationException $e) {
+            return new JsonResponse($e->getMessage(), 400);
         }
     }
 }

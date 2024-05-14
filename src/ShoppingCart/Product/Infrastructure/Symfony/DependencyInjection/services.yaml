@@ -7,11 +7,13 @@ services:
     arguments:
       - '@Doctrine\DBAL\Connection'
 
+  App\ShoppingCart\Seller\Domain\SellerRepository: '@App\ShoppingCart\Seller\Infrastructure\Persistence\Dbal\DbalSellerRepository'
   App\ShoppingCart\Product\Domain\ProductRepository: '@App\ShoppingCart\Product\Infrastructure\Persistence\Dbal\DbalProductRepository'
 
   App\ShoppingCart\Product\Application\ProductCreator:
     arguments:
       - '@App\ShoppingCart\Product\Domain\ProductRepository'
+      - '@App\ShoppingCart\Seller\Domain\SellerRepository'
 
   App\ShoppingCart\Product\Application\ProductEliminator:
     arguments:
