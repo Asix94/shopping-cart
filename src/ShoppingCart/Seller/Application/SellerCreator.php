@@ -8,7 +8,7 @@ use App\ShoppingCart\Seller\Domain\SellerName;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
 use App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller\AddSellerRequest;
 
-final class SellerCreator
+class SellerCreator
 {
     public function __construct(private readonly SellerRepository $sellerRepository) {}
     public function __invoke(AddSellerRequest $sellerRequest): void

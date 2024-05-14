@@ -36,16 +36,6 @@ final class DbalSellerRepositoryTest extends KernelTestCase
         $this->deleteSeller($id);
     }
 
-    public function testSellerFailedSaveException(): void
-    {
-        $id = SellerId::fromString(Uuid::uuid4()->toString());
-        $name = SellerName::fromString('test');
-
-        $seller = new Seller($id, $name);
-        $this->repository->save($seller);
-
-    }
-
     public function testRemove(): void
     {
         $id = SellerId::fromString(Uuid::uuid4()->toString());
