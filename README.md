@@ -82,3 +82,40 @@ http://localhost:9095/seller/remove
 }
 ```
 
+
+### Add Product
+
+Add and save product in the database.
+
+**URL**
+
+http://localhost:9095/product/add
+
+**Parameters**
+
+| Name     | Type   | Description   |
+|----------|--------|---------------|
+| sellerId | string | Id Seller     |
+| name     | string | Name Product  |
+| price    | int    | Price Product |
+
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Product is add successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter sellerId is required"
+}
+```
+- 404 OK:
+```json
+{
+   "response":"Seller not found"
+}
+```
