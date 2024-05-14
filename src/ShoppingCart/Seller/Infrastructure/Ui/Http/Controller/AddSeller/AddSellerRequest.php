@@ -1,7 +1,6 @@
 <?php
 
 namespace App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller;
-
 final class AddSellerRequest
 {
     public function __construct(private readonly string $id, private readonly string $name) {}

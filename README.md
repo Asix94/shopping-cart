@@ -24,5 +24,34 @@ With the following commands, you will leave the database unchanged, as if just m
   make test/db-fresh
 ```
 
-## Documentación
+## Documentation
+
+### Create Seller
+
+Create and save a seller in the database.
+
+**URL**
+
+http://localhost:9095/seller/add
+
+**Parameters**
+
+| Name   | Type   | Description             |
+|--------|--------|-------------------------|
+| name   | string | Name Seller             |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Seller is saved successfully"
+}
+```
+- 500 OK:
+```json
+{
+   "response":"Parameter name is required"
+}
+```
+
 
