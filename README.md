@@ -47,11 +47,38 @@ http://localhost:9095/seller/add
    "response":"Seller is saved successfully"
 }
 ```
-- 500 OK:
+- 400 OK:
 ```json
 {
    "response":"Parameter name is required"
 }
 ```
 
+### Remove Seller
+
+Remove seller in the database.
+
+**URL**
+
+http://localhost:9095/seller/remove
+
+**Parameters**
+
+| Name | Type   | Description |
+|------|--------|-------------|
+| id   | string | Id Seller   |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Seller is remove successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter id is required"
+}
+```
 
