@@ -20,7 +20,7 @@ final class DbalSellerRepositoryTest extends KernelTestCase
         $this->connection       = $this->getContainer()->get(Connection::class);
         $this->repository = new DbalSellerRepository($this->connection);
     }
-    public function testSave(): void
+    public function testSaveSeller(): void
     {
         $id = SellerId::fromString(Uuid::uuid4()->toString());
         $name = SellerName::fromString('test');
@@ -34,6 +34,16 @@ final class DbalSellerRepositoryTest extends KernelTestCase
         $this->assertEquals($sellerFind->name(), $seller->name());
 
         $this->deleteSeller($id);
+    }
+
+    public function testSellerFailedSaveException(): void
+    {
+        $id = SellerId::fromString(Uuid::uuid4()->toString());
+        $name = SellerName::fromString('test');
+
+        $seller = new Seller($id, $name);
+        $this->repository->save($seller);
+
     }
 
     public function testRemove(): void

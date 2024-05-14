@@ -21,7 +21,7 @@ final class DbalProductRepository implements ProductRepository
         try {
             $this->connection->beginTransaction();
             $this->connection->executeStatement(
-                "INSERT INTO product (id, sellerId, name, price)
+                "INSERT INTO product (id, seller_id, name, price)
                      VALUE (:id, :sellerId, :name, :price)",
                 [
                     'id' => $product->id()->toString(),

@@ -84,7 +84,7 @@ final class DbalProductRepositoryTest extends KernelTestCase
         }
         return new Product(
             ProductId::fromString($product['id']),
-            SellerId::fromString($product['sellerId']),
+            SellerId::fromString($product['seller_id']),
             Name::fromString($product['name']),
             Price::fromFloat($product['price']),);
     }
@@ -107,7 +107,7 @@ final class DbalProductRepositoryTest extends KernelTestCase
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
-            "INSERT INTO product (id, sellerId, name, price)
+            "INSERT INTO product (id, seller_id, name, price)
                      VALUE (:id, :sellerId, :name, :price)",
             [
                 'id' => $productId,

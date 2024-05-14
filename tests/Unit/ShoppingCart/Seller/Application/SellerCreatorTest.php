@@ -3,11 +3,15 @@
 namespace App\Tests\Unit\ShoppingCart\Seller\Application;
 
 use App\ShoppingCart\Seller\Application\SellerCreator;
+use App\ShoppingCart\Seller\Domain\Exceptions\FailedSaveSellerException;
 use App\ShoppingCart\Seller\Domain\Seller;
 use App\ShoppingCart\Seller\Domain\SellerId;
 use App\ShoppingCart\Seller\Domain\SellerName;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
 use App\ShoppingCart\Seller\Infrastructure\Ui\Http\Controller\AddSeller\AddSellerRequest;
+use App\Tests\Unit\ShoppingCart\Seller\Application\Mothers\AddRequestMother;
+use App\Tests\Unit\ShoppingCart\Seller\Application\Mothers\SellerMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -24,10 +28,10 @@ final class SellerCreatorTest extends TestCase
     public function testSellerCreator(): void
     {
         $id = Uuid::uuid4()->toString();
-        $name = 'Farmacia';
+        $name = 'Test';
 
-        $sellerRequest = $this->createRequest($id, $name);
-        $seller = $this->createSeller($sellerRequest);
+        $sellerRequest = AddRequestMother::createRequest($id, $name);
+        $seller = SellerMother::createSeller($sellerRequest);
 
         $this->repository
             ->expects($this->once())
@@ -35,21 +39,5 @@ final class SellerCreatorTest extends TestCase
             ->with($seller);
 
         $this->useCase->__invoke($sellerRequest);
-    }
-
-    private function createRequest(string $id, string $name): AddSellerRequest
-    {
-        return AddSellerRequest::sellerRequest(
-            $id,
-            $name
-        );
-    }
-
-    private function createSeller(AddSellerRequest $request): Seller
-    {
-        return new Seller(
-            SellerId::fromString($request->id()),
-            SellerName::fromString($request->name()),
-        );
     }
 }
