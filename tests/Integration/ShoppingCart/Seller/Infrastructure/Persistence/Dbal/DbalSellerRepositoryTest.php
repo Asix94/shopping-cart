@@ -50,6 +50,22 @@ final class DbalSellerRepositoryTest extends KernelTestCase
         $this->assertNull($sellerFind);
     }
 
+    public function testFindById(): void
+    {
+        $id = SellerId::fromString(Uuid::uuid4()->toString());
+        $name = SellerName::fromString('test');
+
+        $seller = new Seller($id, $name);
+        $this->saveSeller($seller);
+
+        $seller = $this->repository->findById($id);
+
+        $this->assertEquals($seller->id(), $id);
+        $this->assertEquals($seller->name(), $name);
+
+        $this->deleteSeller($id);
+    }
+
     private function findSeller(SellerId $id): ?Seller
     {
         $seller = $this->connection->createQueryBuilder()
