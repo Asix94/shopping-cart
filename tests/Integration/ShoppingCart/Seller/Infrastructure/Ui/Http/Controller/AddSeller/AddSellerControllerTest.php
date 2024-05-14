@@ -32,4 +32,15 @@ final class AddSellerControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
         $this->assertEquals('Seller is saved successfully', json_decode($response->getContent(), true));
     }
+
+    public function testAddSellerWithoutParams(): void
+    {
+        $this->client->request(
+            method: 'POST',
+            uri: '/seller/add',
+        );
+
+        $response = $this->client->getResponse();
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
 }
