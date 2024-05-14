@@ -26,7 +26,7 @@ With the following commands, you will leave the database unchanged, as if just m
 
 ## Documentation
 
-### Create Seller
+### Add Seller
 
 Create and save a seller in the database.
 
@@ -117,5 +117,33 @@ http://localhost:9095/product/add
 ```json
 {
    "response":"Seller not found"
+}
+```
+
+### Remove Product
+
+Remove product in the database.
+
+**URL**
+
+http://localhost:9095/product/remove
+
+**Parameters**
+
+| Name  | Type   | Description   |
+|-------|--------|---------------|
+| id    | string | Id Product    |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Product is remove successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter id is required"
 }
 ```
