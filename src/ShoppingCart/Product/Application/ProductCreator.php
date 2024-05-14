@@ -12,7 +12,7 @@ use App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct\AddPro
 use App\ShoppingCart\Seller\Domain\Exceptions\SellerNotFoundException;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
 
-final class ProductCreator
+class ProductCreator
 {
     public function __construct(
         private readonly ProductRepository $productRepository,
