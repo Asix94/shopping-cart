@@ -4,6 +4,7 @@ namespace App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\RemoveProdu
 
 use App\ShoppingCart\Product\Application\ProductEliminator;
 use App\ShoppingCart\Product\Domain\Exceptions\FailedRemoveProductException;
+use App\ShoppingCart\Shared\Domain\Exception\ValidationException;
 use App\ShoppingCart\Shared\Domain\ValidateRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,8 @@ final class RemoveProductController
             return new JsonResponse('Product is remove successfully', 201);
         } catch (FailedRemoveProductException $e) {
             return new JsonResponse($e->getMessage(), 500);
+        } catch (ValidationException $e) {
+            return new JsonResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), 404);
         }
