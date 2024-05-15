@@ -13,7 +13,7 @@ use App\ShoppingCart\Product\Domain\Exceptions\FailedFindProductException;
 use App\ShoppingCart\Product\Domain\ProductId;
 use App\ShoppingCart\Product\Domain\ProductRepository;
 
-final class ItemCreator
+class ItemCreator
 {
     public function __construct(
         private readonly CartRepository $cartRepository,

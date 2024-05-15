@@ -1,43 +1,43 @@
 <?php
 
-namespace App\Tests\Integration\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct;
+namespace App\Tests\Integration\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\AddItem;
 
-use App\ShoppingCart\Product\Application\ProductCreator;
+use App\ShoppingCart\Cart\Application\Item\ItemCreator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AddProductControllerTest extends WebTestCase
+final class AddItemControllerTest extends WebTestCase
 {
-    private ProductCreator|MockObject $useCase;
+    private ItemCreator|MockObject $useCase;
     private KernelBrowser $client;
 
     protected function setUp(): void
     {
         self::ensureKernelShutdown();
         $this->client = static::createClient();
-        $this->useCase = $this->createMock(ProductCreator::class);
-        static::getContainer()->set('App\ShoppingCart\Product\Application\ProductCreator', $this->useCase);
+        $this->useCase = $this->createMock(ItemCreator::class);
+        static::getContainer()->set('App\ShoppingCart\Cart\Application\Item\ItemCreator', $this->useCase);
     }
 
-    public function testAddProduct(): void
+    public function testAddItem(): void
     {
         $this->client->request(
             method: 'POST',
-            uri: '/product/add?sellerId=cd8250a7-779c-4a95-b6e0-7f47a8134f7d&name=test&price=20',
+            uri: '/cart/item/add?cart_id=7d135250-3a2b-42e0-8956-2ccc24b03f01&product_id=ad46e828-2d2e-4674-946d-7fcefd66efec',
         );
 
         $response = $this->client->getResponse();
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        $this->assertEquals('Product is saved successfully', json_decode($response->getContent(), true));
+        $this->assertEquals('Item is saved successfully', json_decode($response->getContent(), true));
     }
 
-    public function testAddProductWithoutParams(): void
+    public function testAddItemWithOutParams(): void
     {
         $this->client->request(
             method: 'POST',
-            uri: '/product/add',
+            uri: '/cart/item/add',
         );
 
         $this->client->getResponse();
