@@ -3,13 +3,12 @@
 namespace App\Tests\Unit\ShoppingCart\Cart\Application;
 
 use App\ShoppingCart\Cart\Application\Cart\CartCreator;
-use App\ShoppingCart\Cart\Domain\Cart\Cart;
-use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartRequest;
+use App\Tests\Shared\CartMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 final class CartCreatorTest extends TestCase
 {
@@ -24,10 +23,8 @@ final class CartCreatorTest extends TestCase
 
     public function testCreate(): void
     {
-        $id = Uuid::uuid4()->toString();
-
-        $cartRequest = AddCartRequest::addCartRequest($id);
-        $cart = new Cart(CartId::fromString($id), Items::create([]));
+        $cart = CartMother::create(new Items([]));
+        $cartRequest = AddCartRequest::addCartRequest($cart->id()->toString());
 
         $this->repository
             ->expects($this->once())

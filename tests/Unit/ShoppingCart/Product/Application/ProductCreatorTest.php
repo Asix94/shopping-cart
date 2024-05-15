@@ -3,20 +3,15 @@
 namespace App\Tests\Unit\ShoppingCart\Product\Application;
 
 use App\ShoppingCart\Product\Application\ProductCreator;
-use App\ShoppingCart\Product\Domain\Name;
-use App\ShoppingCart\Product\Domain\Price;
-use App\ShoppingCart\Product\Domain\Product;
-use App\ShoppingCart\Product\Domain\ProductId;
 use App\ShoppingCart\Product\Domain\ProductRepository;
 use App\ShoppingCart\Product\Domain\SellerId;
 use App\ShoppingCart\Product\Infrastructure\Ui\Http\Controller\AddProduct\AddProductRequest;
 use App\ShoppingCart\Seller\Domain\Exceptions\SellerNotFoundException;
-use App\ShoppingCart\Seller\Domain\Seller;
-use App\ShoppingCart\Seller\Domain\SellerName;
 use App\ShoppingCart\Seller\Domain\SellerRepository;
+use App\Tests\Shared\ProductMother;
+use App\Tests\Shared\SellerMother;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 final class ProductCreatorTest extends TestCase
 {
@@ -33,23 +28,18 @@ final class ProductCreatorTest extends TestCase
 
     public function testCreate(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $sellerId = Uuid::uuid4()->toString();
-        $name = 'Test Product';
-        $sellerName = 'Test Seller';
-        $price = 100;
-
-        $productRequest = $this->createRequest($id, $sellerId, $name, $price);
-        $product = $this->createProduct($productRequest);
-        $seller = new Seller(
-            \App\ShoppingCart\Seller\Domain\SellerId::fromString($sellerId),
-            SellerName::fromString($sellerName)
-        );
+        $seller = SellerMother::create();
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $productRequest = $this->createRequest(
+            $product->id()->toString(),
+            $product->sellerId()->toString(),
+            $product->name()->toString(),
+            $product->price()->toString());
 
         $this->sellerRepository
             ->expects($this->once())
             ->method('findById')
-            ->with(\App\ShoppingCart\Seller\Domain\SellerId::fromString($sellerId))
+            ->with($seller->id())
             ->willReturn($seller);
 
         $this->repository
@@ -62,19 +52,18 @@ final class ProductCreatorTest extends TestCase
 
     public function testSellerNotFound(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $sellerId = Uuid::uuid4()->toString();
-        $name = 'Test Product';
-        $sellerName = 'Test Seller';
-        $price = 100;
-
-        $productRequest = $this->createRequest($id, $sellerId, $name, $price);
-        $product = $this->createProduct($productRequest);
+        $seller = SellerMother::create();
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $productRequest = $this->createRequest(
+            $product->id()->toString(),
+            $product->sellerId()->toString(),
+            $product->name()->toString(),
+            $product->price()->toString());
 
         $this->sellerRepository
             ->expects($this->once())
             ->method('findById')
-            ->with(\App\ShoppingCart\Seller\Domain\SellerId::fromString($sellerId))
+            ->with($seller->id())
             ->willReturn(null);
 
         $this->expectException(SellerNotFoundException::class);
@@ -88,16 +77,6 @@ final class ProductCreatorTest extends TestCase
             $sellerId,
             $name,
             $price
-        );
-    }
-
-    private function createProduct(AddProductRequest $request): Product
-    {
-        return new Product(
-            ProductId::fromString($request->id()),
-            SellerId::fromString($request->sellerId()),
-            Name::fromString($request->name()),
-            Price::fromFloat($request->price())
         );
     }
 }
