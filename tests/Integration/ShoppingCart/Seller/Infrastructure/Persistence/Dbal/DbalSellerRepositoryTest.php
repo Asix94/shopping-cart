@@ -6,6 +6,7 @@ use App\ShoppingCart\Seller\Domain\Seller;
 use App\ShoppingCart\Seller\Domain\SellerId;
 use App\ShoppingCart\Seller\Domain\SellerName;
 use App\ShoppingCart\Seller\Infrastructure\Persistence\Dbal\DbalSellerRepository;
+use App\Tests\Shared\SellerMother;
 use Doctrine\DBAL\Connection;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -22,48 +23,37 @@ final class DbalSellerRepositoryTest extends KernelTestCase
     }
     public function testSaveSeller(): void
     {
-        $id = SellerId::fromString(Uuid::uuid4()->toString());
-        $name = SellerName::fromString('test');
-
-        $seller = new Seller($id, $name);
+        $seller = SellerMother::create();
         $this->repository->save($seller);
-
-        $sellerFind = $this->findSeller($id);
+        $sellerFind = $this->findSeller($seller->id());
 
         $this->assertEquals($sellerFind->id(), $seller->id());
         $this->assertEquals($sellerFind->name(), $seller->name());
 
-        $this->deleteSeller($id);
+        $this->deleteSeller($seller->id());
     }
 
     public function testRemove(): void
     {
-        $id = SellerId::fromString(Uuid::uuid4()->toString());
-        $name = SellerName::fromString('test');
-
-        $seller = new Seller($id, $name);
+        $seller = SellerMother::create();
         $this->saveSeller($seller);
-
-        $this->repository->remove($id);
-        $sellerFind = $this->findSeller($id);
+        $this->repository->remove($seller->id());
+        $sellerFind = $this->findSeller($seller->id());
 
         $this->assertNull($sellerFind);
     }
 
     public function testFindById(): void
     {
-        $id = SellerId::fromString(Uuid::uuid4()->toString());
-        $name = SellerName::fromString('test');
-
-        $seller = new Seller($id, $name);
+        $seller = SellerMother::create();
         $this->saveSeller($seller);
 
-        $seller = $this->repository->findById($id);
+        $sellerFind = $this->repository->findById($seller->id());
 
-        $this->assertEquals($seller->id(), $id);
-        $this->assertEquals($seller->name(), $name);
+        $this->assertEquals($sellerFind->id(), $seller->id());
+        $this->assertEquals($sellerFind->name(), $seller->name());
 
-        $this->deleteSeller($id);
+        $this->deleteSeller($seller->id());
     }
 
     private function findSeller(SellerId $id): ?Seller

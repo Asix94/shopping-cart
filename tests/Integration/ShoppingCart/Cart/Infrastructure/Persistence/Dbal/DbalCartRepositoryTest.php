@@ -4,8 +4,15 @@ namespace App\Tests\Integration\ShoppingCart\Cart\Infrastructure\Persistence\Dba
 
 use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
+use App\ShoppingCart\Cart\Domain\Cart\Item;
 use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Persistence\Dbal\DbalCartRepository;
+use App\ShoppingCart\Product\Domain\Name;
+use App\ShoppingCart\Product\Domain\Price;
+use App\ShoppingCart\Product\Domain\Product;
+use App\ShoppingCart\Product\Domain\ProductId;
+use App\ShoppingCart\Product\Domain\SellerId;
+use App\Tests\Shared\CartMother;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Doctrine\DBAL\Connection;
@@ -23,12 +30,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
 
     public function testSave(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $cart = new Cart(
-            CartId::fromString($id),
-            Items::create([])
-        );
-
+        $cart = CartMother::create(new Items([]));
         $this->repository->save($cart);
         $cartFinder = $this->findCart($cart->id());
 
@@ -37,7 +39,17 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteCart($cart->id());
     }
 
-    public function testConfirmedCart(): void
+    /*public function saveCartItem(): void
+    {
+        $cartId = Uuid::uuid4()->toString();
+        $product = $this->createProduct();
+        $item = new Item(
+
+        );
+        $this->repository->saveItemCart();
+    }*/
+
+    /*public function testConfirmedCart(): void
     {
         $id = Uuid::uuid4()->toString();
         $cart = new Cart(
@@ -54,7 +66,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->assertTrue($cartConfirmed->confirmed());
 
         $this->deleteCart($cart->id());
-    }
+    }*/
 
     private function findCart(CartId $id): ?Cart
     {

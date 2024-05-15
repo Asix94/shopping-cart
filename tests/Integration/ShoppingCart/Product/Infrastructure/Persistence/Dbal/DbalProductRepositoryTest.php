@@ -8,7 +8,9 @@ use App\ShoppingCart\Product\Domain\ProductId;
 use App\ShoppingCart\Product\Domain\Name;
 use App\ShoppingCart\Product\Domain\SellerId;
 use App\ShoppingCart\Product\Infrastructure\Persistence\Dbal\DbalProductRepository;
-use Ramsey\Uuid\Uuid;
+use App\ShoppingCart\Seller\Domain\Seller;
+use App\Tests\Shared\ProductMother;
+use App\Tests\Shared\SellerMother;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Doctrine\DBAL\Connection;
 
@@ -25,48 +27,34 @@ final class DbalProductRepositoryTest extends KernelTestCase
 
     public function testSave(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $sellerId = Uuid::uuid4()->toString();
-        $sellerName = 'seller name';
-        $name = 'product name';
-        $price = 20.0;
+        $seller = SellerMother::create();
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
 
-        $this->saveSeller($sellerId, $sellerName);
-
-        $product = new Product(
-            ProductId::fromString($id),
-            SellerId::fromString($sellerId),
-            Name::fromString($name),
-            Price::fromFloat($price)
-        );
-
+        $this->saveSeller($seller);
         $this->repository->save($product);
-        $productFinder = $this->findProduct(ProductId::fromString($id));
+        $productFinder = $this->findProduct($product->id());
 
         $this->assertEquals($product->id(), $productFinder->id());
         $this->assertEquals($product->sellerId(), $productFinder->sellerId());
         $this->assertEquals($product->name(), $productFinder->name());
         $this->assertEquals($product->price(), $productFinder->price());
 
-        $this->removeProduct($id);
-        $this->removeSeller($sellerId);
+        $this->removeProduct($product->id());
+        $this->removeSeller($seller->id());
     }
 
     public function testRemove(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $sellerId = Uuid::uuid4()->toString();
-        $sellerName = 'seller name';
-        $name = 'product name';
-        $price = 20.0;
+        $seller = Sellermother::create();
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
 
-        $this->saveSeller($sellerId, $sellerName);
-        $this->saveProduct($id, $sellerId, $name, $price);
+        $this->saveSeller($seller);
+        $this->saveProduct($product);
 
-        $this->repository->remove(ProductId::fromString($id));
-        $this->removeSeller($sellerId);
+        $this->repository->remove($product->id());
+        $this->removeSeller($seller->id());
 
-        $product = $this->findProduct(ProductId::fromString($id));
+        $product = $this->findProduct($product->id());
         $this->assertNull($product);
     }
 
@@ -89,55 +77,55 @@ final class DbalProductRepositoryTest extends KernelTestCase
             Price::fromFloat($product['price']),);
     }
 
-    private function saveSeller(string $sellerId, string $sellerName): void
+    private function saveSeller(Seller $seller): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
             "INSERT INTO seller (id, name)
                      VALUE (:id, :name)",
             [
-                'id' => $sellerId,
-                'name' => $sellerName,
+                'id' => $seller->id()->toString(),
+                'name' => $seller->name()->toString(),
             ]
         );
         $this->connection->commit();
     }
 
-    private function saveProduct(string $productId, string $sellerId, string $name, float $price): void
+    private function saveProduct(Product $product): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
             "INSERT INTO product (id, seller_id, name, price)
                      VALUE (:id, :sellerId, :name, :price)",
             [
-                'id' => $productId,
-                'sellerId' => $sellerId,
-                'name' => $name,
-                'price' => $price,
+                'id' => $product->id()->toString(),
+                'sellerId' => $product->sellerId()->toString(),
+                'name' => $product->name()->toString(),
+                'price' => $product->price()->toString(),
             ]
         );
         $this->connection->commit();
     }
 
-    private function removeSeller(string $sellerId): void
+    private function removeSeller(\App\ShoppingCart\Seller\Domain\SellerId $sellerId): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
             "DELETE FROM seller WHERE id = :id",
             [
-                'id' => $sellerId,
+                'id' => $sellerId->toString(),
             ]
         );
         $this->connection->commit();
     }
 
-    private function removeProduct(string $id): void
+    private function removeProduct(ProductId $id): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
             "DELETE FROM product WHERE id = :id",
             [
-                'id' => $id,
+                'id' => $id->toString(),
             ]
         );
         $this->connection->commit();
