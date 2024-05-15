@@ -173,15 +173,11 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteSeller($seller->id());
     }
 
-    /*public function testConfirmedCart(): void
+    public function testConfirmedCart(): void
     {
-        $id = Uuid::uuid4()->toString();
-        $cart = new Cart(
-            CartId::fromString($id),
-            Items::create([])
-        );
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
 
-        $this->createCart($cart);
         $cartNotConfirmed = $this->findCart($cart->id());
         $this->assertFalse($cartNotConfirmed->confirmed());
 
@@ -190,7 +186,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->assertTrue($cartConfirmed->confirmed());
 
         $this->deleteCart($cart->id());
-    }*/
+    }
 
     private function findCart(CartId $id): ?Cart
     {
