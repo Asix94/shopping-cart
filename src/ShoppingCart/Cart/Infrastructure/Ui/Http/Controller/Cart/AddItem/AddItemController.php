@@ -3,9 +3,11 @@
 namespace App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddItem;
 
 use App\ShoppingCart\Cart\Application\Item\ItemCreator;
+use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedItemIsInCartException;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedSaveItemCartException;
 use App\ShoppingCart\Product\Domain\Exceptions\FailedFindProductException;
-use Doctrine\DBAL\Driver\Exception;
+use App\ShoppingCart\Shared\Domain\Exception\ValidationException;
+use App\ShoppingCart\Shared\Domain\ValidateRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -16,33 +18,21 @@ final class AddItemController
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $cartId = $request->query->get('cart_id');
-            $productId = $request->query->get('product_id');
-            $quantity = $request->query->get('quantity');
-
-            $this->ValidateParams($cartId, 'cart id');
-            $this->ValidateParams($productId, 'product id');
-            $this->ValidateParams($quantity, 'quantity');
+            ValidateRequest::validate($request, ['cart_id', 'product_id']);
 
             $itemRequest = AddItemRequest::itemRequest(
-                $cartId,
-                $productId,
-                $quantity
+                $request->query->get('cart_id'),
+                $request->query->get('product_id')
             );
 
             $this->creator->__invoke($itemRequest);
             return new JsonResponse('Item is saved successfully', 201);
-        } catch (FailedSaveItemCartException $e) {
+        } catch (FailedSaveItemCartException | FailedItemIsInCartException $e) {
             return new JsonResponse($e->getMessage(), 500);
-        } catch (FailedFindProductException | \Exception $e) {
+        } catch (FailedFindProductException $e) {
             return new JsonResponse($e->getMessage(), 404);
-        }
-    }
-
-    private function ValidateParams(?string $param, string $nameParam): void
-    {
-        if (!$param) {
-            throw new \Exception('Parameter ' . $nameParam . ' is required.');
+        } catch (ValidationException $e) {
+            return new JsonResponse($e->getMessage(), 400);
         }
     }
 }

@@ -69,7 +69,7 @@ final class DbalProductRepository implements ProductRepository
             if (!$product) { return null; }
             return new Product(
                 ProductId::fromString($product['id']),
-                SellerId::fromString($product['sellerId']),
+                SellerId::fromString($product['seller_id']),
                 Name::fromString($product['name']),
                 Price::fromFloat($product['price']),
             );

@@ -147,3 +147,19 @@ http://localhost:9095/product/remove
    "response":"Parameter id is required"
 }
 ```
+
+### Add Cart
+
+Add cart and save in the database.
+
+**URL**
+
+http://localhost:9095/cart/add
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Cart is add successfully"
+}
+```

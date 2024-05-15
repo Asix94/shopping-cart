@@ -155,7 +155,7 @@ final class DbalCartRepository implements CartRepository
         );
     }
 
-    public function findItemByCartIdAndProductId(CartId $cartId, ProductId $productId): Item
+    public function findItemByCartIdAndProductId(CartId $cartId, ProductId $productId): ?Item
     {
         $cartQueryBuilder = $this->connection
             ->createQueryBuilder()
@@ -170,12 +170,12 @@ final class DbalCartRepository implements CartRepository
 
         $item = $cartQueryBuilder->executeQuery()->fetchAssociative();
 
-        if (null === $item) { return throw new \Exception('Item not found'); }
+        if (!$item) { return null; }
 
         return new Item(
             new Product(
                 ProductId::fromString($item['product_id']),
-                SellerId::fromString($item['sellerId']),
+                SellerId::fromString($item['seller_id']),
                 Name::fromString($item['name']),
                 Price::fromFloat($item['price'])
             ),

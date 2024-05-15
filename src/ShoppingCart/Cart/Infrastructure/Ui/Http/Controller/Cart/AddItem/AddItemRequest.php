@@ -6,13 +6,12 @@ final class AddItemRequest
 {
     public function __construct(
         private readonly string $cartId,
-        private readonly string $productId,
-        private readonly int $quantity,
+        private readonly string $productId
     ) {}
 
-    public static function itemRequest(string $cartId, string $productId, int $quantity): self
+    public static function itemRequest(string $cartId, string $productId): self
     {
-        return new self($cartId, $productId, $quantity);
+        return new self($cartId, $productId);
     }
     public function cartId(): string
     {
@@ -22,10 +21,5 @@ final class AddItemRequest
     public function productId(): string
     {
         return $this->productId;
-    }
-
-    public function quantity(): int
-    {
-        return $this->quantity;
     }
 }
