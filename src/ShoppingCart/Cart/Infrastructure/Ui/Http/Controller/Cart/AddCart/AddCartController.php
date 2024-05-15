@@ -21,8 +21,6 @@ final class AddCartController
             return new JsonResponse('Cart is saved successfully', 201);
         } catch (FailedSaveCartException $e) {
             return new JsonResponse($e->getMessage(), 500);
-        } catch (\Exception $e) {
-            return new JsonResponse($e->getMessage(), 404);
         }
     }
 }

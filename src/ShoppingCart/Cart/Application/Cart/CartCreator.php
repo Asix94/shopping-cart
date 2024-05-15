@@ -8,7 +8,7 @@ use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\AddCart\AddCartRequest;
 
-final class CartCreator
+class CartCreator
 {
     public function __construct(private readonly CartRepository $cartRepository) {}
 
