@@ -163,3 +163,32 @@ http://localhost:9095/cart/add
    "response":"Cart is add successfully"
 }
 ```
+
+### Add Item
+
+Add item cart and save in the database.
+
+**URL**
+
+http://localhost:9095/cart/item/add
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+| product_id | string | Id product  |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Cart item is add successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
