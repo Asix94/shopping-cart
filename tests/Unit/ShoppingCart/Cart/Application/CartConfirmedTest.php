@@ -5,7 +5,10 @@ namespace App\Tests\Unit\ShoppingCart\Cart\Application;
 use App\ShoppingCart\Cart\Application\Cart\CartConfirmed;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
+use App\ShoppingCart\Cart\Domain\Cart\Items;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\ConfirmedCart\ConfirmedCartRequest;
+use App\Tests\Shared\CartMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -22,15 +25,13 @@ final class CartConfirmedTest extends TestCase
 
     public function testConfirmed(): void
     {
-        $id = Uuid::uuid4()->toString();
-
-        $cartRequest = ConfirmedCartRequest::confirmedCartRequest($id);
-        $cart = CartId::fromString($id);
+        $cart = CartMother::create(new Items([]));
+        $cartRequest = ConfirmedCartRequest::confirmedCartRequest($cart->id()->toString());
 
         $this->repository
             ->expects($this->once())
             ->method('cartConfirmed')
-            ->with($cart);
+            ->with($cart->id());
 
         $this->useCase->__invoke($cartRequest);
     }
