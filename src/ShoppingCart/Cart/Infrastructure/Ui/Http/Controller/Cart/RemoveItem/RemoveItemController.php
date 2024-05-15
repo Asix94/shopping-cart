@@ -4,6 +4,7 @@ namespace App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveIte
 
 use App\ShoppingCart\Cart\Application\Item\ItemEliminator;
 use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedRemoveItemCartException;
+use App\ShoppingCart\Shared\Domain\ValidateRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,10 +15,11 @@ final class RemoveItemController
     public function __invoke(Request $request): JsonResponse
     {
         try {
-            $cartId = $request->query->get('cart_id');
-            $productId = $request->query->get('product_id');
-
-            $itemRequest = RemoveItemRequest::removeItemRequest($cartId, $productId);
+            ValidateRequest::validate($request, ['cart_id', 'product_id']);
+            $itemRequest = RemoveItemRequest::removeItemRequest(
+                $request->query->get('cart_id'),
+                $request->query->get('product_id')
+            );
             $this->eliminator->__invoke($itemRequest);
 
             return new JsonResponse('Item is remove successfully', 201);
