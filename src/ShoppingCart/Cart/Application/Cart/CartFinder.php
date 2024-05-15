@@ -11,7 +11,7 @@ final class CartFinder
 {
     public function __construct(private readonly CartRepository $cartRepository) {}
 
-    public function __invoke(TotalAmountRequest $request): ?Cart
+    public function __invoke(TotalAmountRequest $request): Cart
     {
         return $this->cartRepository->findById(CartId::fromString($request->cartId()));
     }

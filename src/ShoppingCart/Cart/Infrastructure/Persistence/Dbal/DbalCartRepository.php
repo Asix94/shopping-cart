@@ -126,7 +126,7 @@ final class DbalCartRepository implements CartRepository
 
         $cart = $cartQueryBuilder->executeQuery()->fetchAssociative();
 
-        if (null === $cart) { throw new FailedFindCartException(); }
+        if (!$cart) { throw new FailedFindCartException('Cart not found'); }
 
         $itemsQueryBuilder = $this->connection
             ->createQueryBuilder()
@@ -144,7 +144,7 @@ final class DbalCartRepository implements CartRepository
                 ...array_map(fn($item) => new Item(
                     new Product(
                         ProductId::fromString($item['product_id']),
-                        SellerId::fromString($item['sellerId']),
+                        SellerId::fromString($item['seller_id']),
                         Name::fromString($item['name']),
                         Price::fromFloat($item['price'])
                     ),
