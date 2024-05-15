@@ -142,6 +142,37 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteSeller($seller->id());
     }
 
+    public function testRemoveAllItems()
+    {
+        $seller = SellerMother::create();
+        $this->saveSeller($seller);
+
+        $product1 = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product1);
+
+        $product2 = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product2);
+
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
+
+        $item1 = ItemMother::create($product1);
+        $this->saveItem($cart->id(), $item1);
+
+        $item2 = ItemMother::create($product2);
+        $this->saveItem($cart->id(), $item2);
+
+        $this->repository->removeAllItemCart($cart->id());
+        $items = $this->findCartItems($cart->id());
+
+        $this->assertNull($items);
+
+        $this->deleteCart($cart->id());
+        $this->deleteProduct($product1->id());
+        $this->deleteProduct($product2->id());
+        $this->deleteSeller($seller->id());
+    }
+
     /*public function testConfirmedCart(): void
     {
         $id = Uuid::uuid4()->toString();
@@ -225,6 +256,31 @@ final class DbalCartRepositoryTest extends KernelTestCase
                 Price::fromString($itemQuery['price'])
             ),
             Quantity::fromInt($itemQuery['quantity'])
+        );
+    }
+
+    private function findCartItems(CartId $cartId): ?Items
+    {
+        $itemQuery = $this->connection->createQueryBuilder()
+                                      ->select('*')
+                                      ->from('cart_item', 'ci')
+                                      ->join('ci', 'product', 'p', 'ci.product_id = p.id')
+                                      ->where('ci.cart_id = :cart_id')
+                                      ->setParameter('cart_id', $cartId->toString())
+                                      ->executeQuery()->fetchAssociative();
+
+        if(!$itemQuery) { return null; }
+
+        return new Items([
+                ...array_map(fn($item) => new Item(
+                    new Product(
+                        ProductId::fromString($item['product_id']),
+                        SellerId::fromString($item['seller_id']),
+                        Name::fromString($item['name']),
+                        Price::fromFloat($item['price'])
+                    ),
+                    Quantity::fromInt($item['quantity'])
+                ),$itemQuery)]
         );
     }
 
