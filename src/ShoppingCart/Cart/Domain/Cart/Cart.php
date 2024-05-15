@@ -2,7 +2,7 @@
 
 namespace App\ShoppingCart\Cart\Domain\Cart;
 
-final class Cart
+class Cart
 {
     public CONST QUANTITY_DEFAULT = 1;
     public function __construct(

@@ -7,7 +7,7 @@ use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\TotalAmount\TotalAmountRequest;
 
-final class CartFinder
+class CartFinder
 {
     public function __construct(private readonly CartRepository $cartRepository) {}
 

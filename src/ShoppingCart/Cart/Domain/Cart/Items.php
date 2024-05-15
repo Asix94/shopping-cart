@@ -4,7 +4,7 @@ namespace App\ShoppingCart\Cart\Domain\Cart;
 
 use App\ShoppingCart\Shared\Domain\Collection;
 
-final class Items extends Collection
+class Items extends Collection
 {
     public static function create(array $items): Items
     {
