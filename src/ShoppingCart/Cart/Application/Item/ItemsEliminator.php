@@ -6,7 +6,7 @@ use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveAllItems\RemoveAllItemRequest;
 
-final class ItemsEliminator
+class ItemsEliminator
 {
     public function __construct(private readonly CartRepository $cartRepository) {}
 

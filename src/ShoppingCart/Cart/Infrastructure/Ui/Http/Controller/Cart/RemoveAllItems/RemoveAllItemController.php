@@ -22,7 +22,7 @@ final class RemoveAllItemController
             );
             $this->eliminator->__invoke($itemRequest);
 
-            return new JsonResponse('Item is remove successfully', 201);
+            return new JsonResponse('Items removed successfully', 201);
         } catch (FailedRemoveAllItemCartException $e) {
             return new JsonResponse($e->getMessage(), 500);
         } catch (ValidationException $e) {
