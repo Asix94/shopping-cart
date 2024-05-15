@@ -5,7 +5,6 @@ namespace App\ShoppingCart\Cart\Application\Item;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\CartRepository;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\RemoveAllItems\RemoveAllItemRequest;
-use App\ShoppingCart\Product\Domain\ProductId;
 
 final class ItemsEliminator
 {
