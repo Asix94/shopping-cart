@@ -90,8 +90,30 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteCart($cart->id());
         $this->deleteProduct($product->id());
         $this->deleteSeller($seller->id());
+    }
 
+    public function testFindCart(): void
+    {
+        $seller = SellerMother::create();
+        $this->saveSeller($seller);
 
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product);
+
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
+
+        $item = ItemMother::create($product);
+        $this->saveItem($cart->id(), $item);
+
+        $cartRepository = $this->repository->findById($cart->id());
+
+        $this->assertEquals($cart->id(), $cartRepository->id());
+
+        $this->deleteItem($cart->id(), $product->id());
+        $this->deleteCart($cart->id());
+        $this->deleteProduct($product->id());
+        $this->deleteSeller($seller->id());
     }
 
     /*public function testConfirmedCart(): void
