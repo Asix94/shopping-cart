@@ -116,6 +116,32 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteSeller($seller->id());
     }
 
+    public function testUpdateItemQuantity(): void
+    {
+        $seller = SellerMother::create();
+        $this->saveSeller($seller);
+
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product);
+
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
+
+        $item = ItemMother::create($product);
+        $this->saveItem($cart->id(), $item);
+
+        $item->increaseQuantity();
+        $this->repository->updateQuantity($cart->id(), $item);
+        $itemFinder = $this->findCartItem($cart->id(), $item);
+
+        $this->assertEquals($item->quantity()->toInt(),$itemFinder->quantity()->toInt());
+
+        $this->deleteItem($cart->id(), $product->id());
+        $this->deleteCart($cart->id());
+        $this->deleteProduct($product->id());
+        $this->deleteSeller($seller->id());
+    }
+
     /*public function testConfirmedCart(): void
     {
         $id = Uuid::uuid4()->toString();
@@ -180,7 +206,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
 
     private function findCartItem(CartId $cartId, Item $item): ?Item
     {
-        $item = $this->connection->createQueryBuilder()
+        $itemQuery = $this->connection->createQueryBuilder()
                                  ->select('*')
                                  ->from('cart_item', 'ci')
                                  ->join('ci', 'product', 'p', 'ci.product_id = p.id')
@@ -190,15 +216,15 @@ final class DbalCartRepositoryTest extends KernelTestCase
                                  ->setParameter('product_id', $item->product()->id()->toString())
                                  ->executeQuery()->fetchAssociative();
 
-        if(!$item) { return null; }
+        if(!$itemQuery) { return null; }
         return new Item(
             new Product(
-                ProductId::fromString($item['product_id']),
-                SellerId::fromString($item['seller_id']),
-                Name::fromString($item['name']),
-                Price::fromString($item['price'])
+                ProductId::fromString($itemQuery['product_id']),
+                SellerId::fromString($itemQuery['seller_id']),
+                Name::fromString($itemQuery['name']),
+                Price::fromString($itemQuery['price'])
             ),
-            Quantity::fromInt($item['quantity'])
+            Quantity::fromInt($itemQuery['quantity'])
         );
     }
 

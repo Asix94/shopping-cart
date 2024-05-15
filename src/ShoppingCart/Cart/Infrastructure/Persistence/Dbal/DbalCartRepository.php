@@ -183,7 +183,7 @@ final class DbalCartRepository implements CartRepository
         );
     }
 
-    public function UpdateQuantity(CartId $cartId, Item $item): void
+    public function updateQuantity(CartId $cartId, Item $item): void
     {
         try {
             $this->connection->beginTransaction();

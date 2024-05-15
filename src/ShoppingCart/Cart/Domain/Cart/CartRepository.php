@@ -20,5 +20,5 @@ interface CartRepository
 
     public function findItemByCartIdAndProductId(CartId $cartId, ProductId $productId): ?Item;
 
-    public function UpdateQuantity(CartId $cartId, Item $item): void;
+    public function updateQuantity(CartId $cartId, Item $item): void;
 }
