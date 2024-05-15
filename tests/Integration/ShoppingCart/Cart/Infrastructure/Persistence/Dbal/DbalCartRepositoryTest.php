@@ -6,14 +6,18 @@ use App\ShoppingCart\Cart\Domain\Cart\Cart;
 use App\ShoppingCart\Cart\Domain\Cart\CartId;
 use App\ShoppingCart\Cart\Domain\Cart\Item;
 use App\ShoppingCart\Cart\Domain\Cart\Items;
+use App\ShoppingCart\Cart\Domain\Cart\Quantity;
 use App\ShoppingCart\Cart\Infrastructure\Persistence\Dbal\DbalCartRepository;
 use App\ShoppingCart\Product\Domain\Name;
 use App\ShoppingCart\Product\Domain\Price;
 use App\ShoppingCart\Product\Domain\Product;
 use App\ShoppingCart\Product\Domain\ProductId;
 use App\ShoppingCart\Product\Domain\SellerId;
+use App\ShoppingCart\Seller\Domain\Seller;
 use App\Tests\Shared\CartMother;
-use Ramsey\Uuid\Uuid;
+use App\Tests\Shared\ItemMother;
+use App\Tests\Shared\ProductMother;
+use App\Tests\Shared\SellerMother;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Doctrine\DBAL\Connection;
 
@@ -39,15 +43,30 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteCart($cart->id());
     }
 
-    /*public function saveCartItem(): void
+    public function testSaveCartItem(): void
     {
-        $cartId = Uuid::uuid4()->toString();
-        $product = $this->createProduct();
-        $item = new Item(
+        $seller = SellerMother::create();
+        $this->saveSeller($seller);
 
-        );
-        $this->repository->saveItemCart();
-    }*/
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product);
+
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
+
+        $item = ItemMother::create($product);
+        $this->repository->saveItemCart($cart->id(), $item);
+
+        $itemFinder = $this->findCartItem($cart->id(), $item);
+
+        $this->assertEquals($product, $itemFinder->product());
+        $this->assertEquals($item->quantity(), $itemFinder->quantity());
+
+        $this->deleteItem($cart->id(), $product->id());
+        $this->deleteCart($cart->id());
+        $this->deleteProduct($product->id());
+        $this->deleteSeller($seller->id());
+    }
 
     /*public function testConfirmedCart(): void
     {
@@ -87,7 +106,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         );
     }
 
-    public function createCart(Cart $cart): void
+    private function saveCart(Cart $cart): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
@@ -99,11 +118,101 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->connection->commit();
     }
 
-    public function deleteCart(CartId $id): void
+    private function deleteCart(CartId $id): void
     {
         $this->connection->beginTransaction();
         $this->connection->executeStatement(
             "DELETE FROM cart WHERE id = :id",
+            [
+                'id' => $id->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function findCartItem(CartId $cartId, Item $item): Item
+    {
+        $item = $this->connection->createQueryBuilder()
+                                 ->select('*')
+                                 ->from('cart_item', 'ci')
+                                 ->join('ci', 'product', 'p', 'ci.product_id = p.id')
+                                 ->where('ci.cart_id = :cart_id')
+                                 ->andWhere('ci.product_id = :product_id')
+                                 ->setParameter('cart_id', $cartId->toString())
+                                 ->setParameter('product_id', $item->product()->id()->toString())
+                                 ->executeQuery()->fetchAssociative();
+
+        return new Item(
+            new Product(
+                ProductId::fromString($item['product_id']),
+                SellerId::fromString($item['seller_id']),
+                Name::fromString($item['name']),
+                Price::fromString($item['price'])
+            ),
+            Quantity::fromInt($item['quantity'])
+        );
+    }
+
+    private function saveSeller(Seller $seller): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO seller (id, name)
+                     VALUE (:id, :name)",
+            [
+                'id' => $seller->id()->toString(),
+                'name' => $seller->name(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function saveProduct(Product $product): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO product (id, seller_id, name, price)
+                     VALUE (:id, :sellerId, :name, :price)",
+            [
+                'id' => $product->id()->toString(),
+                'sellerId' => $product->sellerId()->toString(),
+                'name' => $product->name()->toString(),
+                'price' => $product->price()->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function deleteItem(CartId $cartId, ProductId $productId): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "DELETE FROM cart_item WHERE cart_id = :cart_id and product_id = :product_id",
+            [
+                'cart_id' => $cartId->toString(),
+                'product_id' => $productId->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function deleteProduct(ProductId $id): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "DELETE FROM product WHERE id = :id",
+            [
+                'id' => $id->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function deleteSeller(\App\ShoppingCart\Seller\Domain\SellerId $id): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "DELETE FROM seller WHERE id = :id",
             [
                 'id' => $id->toString(),
             ]
