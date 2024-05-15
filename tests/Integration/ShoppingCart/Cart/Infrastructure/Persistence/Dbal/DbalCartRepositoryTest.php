@@ -68,6 +68,32 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->deleteSeller($seller->id());
     }
 
+    public function testRemoveCartItem(): void
+    {
+        $seller = SellerMother::create();
+        $this->saveSeller($seller);
+
+        $product = ProductMother::create(SellerId::fromString($seller->id()->toString()));
+        $this->saveProduct($product);
+
+        $cart = CartMother::create(new Items([]));
+        $this->saveCart($cart);
+
+        $item = ItemMother::create($product);
+        $this->saveItem($cart->id(), $item);
+
+        $this->repository->removeItemCart($cart->id(), $product->id());
+        $itemDelete = $this->findCartItem($cart->id(), $item);
+
+        $this->assertNull($itemDelete);
+
+        $this->deleteCart($cart->id());
+        $this->deleteProduct($product->id());
+        $this->deleteSeller($seller->id());
+
+
+    }
+
     /*public function testConfirmedCart(): void
     {
         $id = Uuid::uuid4()->toString();
@@ -130,7 +156,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
         $this->connection->commit();
     }
 
-    private function findCartItem(CartId $cartId, Item $item): Item
+    private function findCartItem(CartId $cartId, Item $item): ?Item
     {
         $item = $this->connection->createQueryBuilder()
                                  ->select('*')
@@ -142,6 +168,7 @@ final class DbalCartRepositoryTest extends KernelTestCase
                                  ->setParameter('product_id', $item->product()->id()->toString())
                                  ->executeQuery()->fetchAssociative();
 
+        if(!$item) { return null; }
         return new Item(
             new Product(
                 ProductId::fromString($item['product_id']),
@@ -178,6 +205,21 @@ final class DbalCartRepositoryTest extends KernelTestCase
                 'sellerId' => $product->sellerId()->toString(),
                 'name' => $product->name()->toString(),
                 'price' => $product->price()->toString(),
+            ]
+        );
+        $this->connection->commit();
+    }
+
+    private function saveItem(CartId $cartId, Item $item): void
+    {
+        $this->connection->beginTransaction();
+        $this->connection->executeStatement(
+            "INSERT INTO cart_item (cart_id, product_id, quantity)
+                     VALUE (:cart_id, :product_id, :quantity)",
+            [
+                'cart_id' => $cartId->toString(),
+                'product_id' => $item->product()->id()->toString(),
+                'quantity' => $item->quantity()->toInt(),
             ]
         );
         $this->connection->commit();
