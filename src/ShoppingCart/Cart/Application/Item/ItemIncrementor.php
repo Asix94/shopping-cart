@@ -8,7 +8,7 @@ use App\ShoppingCart\Cart\Domain\Cart\Exceptions\FailedItemNotFoundException;
 use App\ShoppingCart\Cart\Infrastructure\Ui\Http\Controller\Cart\IncreaseItem\IncreaseItemRequest;
 use App\ShoppingCart\Product\Domain\ProductId;
 
-final class ItemIncrementor
+class ItemIncrementor
 {
     public function __construct(private readonly CartRepository $cartRepository) {}
 
