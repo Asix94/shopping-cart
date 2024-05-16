@@ -192,3 +192,174 @@ http://localhost:9095/cart/item/add
    "response":"Parameter cart_id is required"
 }
 ```
+
+### Remove Item
+
+Remove item cart in the database.
+
+**URL**
+
+http://localhost:9095/cart/item/remove
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+| product_id | string | Id product  |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Cart item is removed successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
+
+### Total Amount
+
+Calculate total amount cart
+
+**URL**
+
+http://localhost:9095/cart/item/total_amount
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Total amount is 40 $"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
+
+### Increment Item
+
+Increment number of item in cart
+
+**URL**
+
+http://localhost:9095/cart/item/increment
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+| product_id | string | Id product  |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Item increase successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
+
+### Decrease Item
+
+Decrease number of item in cart
+
+**URL**
+
+http://localhost:9095/cart/item/decrease
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+| product_id | string | Id product  |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Item decrease successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
+
+### Remove All items to cart
+
+Remove All items to cart
+
+**URL**
+
+http://localhost:9095/cart/item/remove_all
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Items removed successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
+
+### Confirmed buy cart
+
+Confirmed buy cart
+
+**URL**
+
+http://localhost:9095/cart/item/confirmed_cart
+
+**Parameters**
+
+| Name       | Type   | Description |
+|------------|--------|-------------|
+| cart_id    | string | Id cart     |
+
+**Response**
+- 201 OK:
+```json
+{
+   "response":"Cart is confirmed successfully"
+}
+```
+- 400 OK:
+```json
+{
+   "response":"Parameter cart_id is required"
+}
+```
